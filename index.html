@@ -111,4 +111,50 @@ let platforms = [
 function login(){
   const u = document.getElementById('username').value;
   const p = document.getElementById('password').value;
-  document
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    document.getElementById('adminPanel').classList.remove('hidden');
+    document.getElementById('adminCorner').classList.remove('hidden');
+  }
+  renderTable([]); // Show empty table after login
+}
+
+function renderTable(data){
+  const table = document.getElementById('resultTable');
+  table.innerHTML = '';
+  if (data.length === 0) return; // Don't show anything if no data
+  data.forEach(p => {
+    table.innerHTML += `<tr><td>${p.name}</td><td>${p.mf}</td><td>${p.share}</td><td>${p.depo}</td></tr>`;
+  });
+}
+
+function searchPlatform(){
+  let q = document.getElementById('search').value.toLowerCase();
+  if(q === '') {
+    renderTable([]); // Keep table empty if nothing entered
+    return;
+  }
+  let filtered = platforms.filter(p => p.name.toLowerCase().includes(q));
+  renderTable(filtered);
+}
+
+let generatedOTP = '';
+const ADMIN_MOBILE = '9999999999'; // change to your real number
+
+function showForgot(){
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('forgotBox').classList.remove('hidden');
+}
+
+function backToLogin(){
+  document.getElementById('forgotBox').classList.add('hidden');
+  document.getElementById('loginBox').classList.remove('hidden');
+}
+
+function sendOTP(){
+  const mob=document.getElementById('mobile').value;
+  if(mob!==ADMIN_MOBILE){alert('Mobile number not registered');return;}
+  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  alert('OTP (Demo): '+generatedOTP);
+  document.getElement
