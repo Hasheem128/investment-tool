@@ -81,4 +81,104 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 const ADMIN_USER = 'hasheem';
-let ADMIN_PASS = localStorage.getItem('ADMIN_PASS') ||
+let ADMIN_PASS = localStorage.getItem('ADMIN_PASS') || 'something';
+let platforms = [
+  {name:'Groww', mf:'BOTH', share:'DEMAT', depo:'CDSL'},
+  {name:'Zerodha', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
+  {name:'Upstox', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
+  {name:'Paytm Money', mf:'BOTH', share:'DEMAT', depo:'NSDL'},
+  {name:'ET Money', mf:'SOA', share:'DEMAT', depo:'CDSL'},
+  {name:'Kuvera', mf:'SOA', share:'DEMAT', depo:'CDSL'},
+  {name:'INDmoney', mf:'BOTH', share:'DEMAT', depo:'CDSL'},
+  {name:'Angel One', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
+  {name:'5Paisa', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
+  {name:'ICICI Direct', mf:'BOTH', share:'DEMAT', depo:'NSDL'},
+  {name:'HDFC Securities', mf:'BOTH', share:'DEMAT', depo:'NSDL'},
+  {name:'Kotak Securities', mf:'BOTH', share:'DEMAT', depo:'NSDL'},
+  {name:'Motilal Oswal', mf:'DEMAT', share:'DEMAT', depo:'NSDL'},
+  {name:'PhonePe', mf:'SOA', share:'DEMAT', depo:'CDSL'},
+  {name:'Axis Direct', mf:'BOTH', share:'DEMAT', depo:'NSDL'},
+  {name:'SBI Securities', mf:'BOTH', share:'DEMAT', depo:'NSDL'},
+  {name:'Dhan', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
+  {name:'Alice Blue', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
+  {name:'Fyers', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
+  {name:'Sharekhan', mf:'BOTH', share:'DEMAT', depo:'NSDL'}
+];
+function login(){
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden'); // REMOVE "hidden" FROM mainApp!!
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    document.getElementById('adminPanel').classList.remove('hidden');
+    document.getElementById('adminCorner').classList.remove('hidden');
+  }
+  renderTable([]); // Show empty table after login
+}
+function renderTable(data){
+  const table = document.getElementById('resultTable');
+  table.innerHTML = '';
+  if(data.length === 0) return;
+  data.forEach(p => {
+    table.innerHTML += `<tr><td>${p.name}</td><td>${p.mf}</td><td>${p.share}</td><td>${p.depo}</td></tr>`;
+  });
+}
+function searchPlatform(){
+  let q = document.getElementById('search').value.toLowerCase();
+  if(q === '') {
+    renderTable([]);
+    return;
+  }
+  let filtered = platforms.filter(p => p.name.toLowerCase().includes(q));
+  renderTable(filtered);
+}
+let generatedOTP = '';
+const ADMIN_MOBILE = '9999999999';
+function showForgot(){
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('forgotBox').classList.remove('hidden');
+}
+function backToLogin(){
+  document.getElementById('forgotBox').classList.add('hidden');
+  document.getElementById('loginBox').classList.remove('hidden');
+}
+function sendOTP(){
+  const mob=document.getElementById('mobile').value;
+  if(mob!==ADMIN_MOBILE){alert('Mobile number not registered');return;}
+  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  alert('OTP (Demo): '+generatedOTP);
+  document.getElementById('otp').classList.remove('hidden');
+  document.getElementById('newAdminPass').classList.remove('hidden');
+  document.getElementById('verifyBtn').classList.remove('hidden');
+}
+function verifyOTP(){
+  const otp=document.getElementById('otp').value;
+  const newP=document.getElementById('newAdminPass').value;
+  if(otp!==generatedOTP){alert('Invalid OTP');return;}
+  ADMIN_PASS=newP;
+  localStorage.setItem('ADMIN_PASS',newP);
+  alert('Password reset successful');
+  backToLogin();
+}
+function changePassword(){
+  const oldP=document.getElementById('oldPass').value;
+  const newP=document.getElementById('newPass').value;
+  if(oldP!==ADMIN_PASS){
+    alert('Current password incorrect');return;
+  }
+  ADMIN_PASS=newP;
+  localStorage.setItem('ADMIN_PASS',newP);
+  alert('Admin password updated successfully');
+}
+function addPlatform(){
+  let n=document.getElementById('pname').value;
+  let mf=document.getElementById('mfmode').value;
+  let dp=document.getElementById('dpmode').value;
+  platforms.push({name:n,mf:mf,share:'DEMAT',depo:dp});
+  if(document.getElementById('search').value.trim() !== '') {
+    searchPlatform();
+  }
+}
+</script>
+</body>
+</html>
