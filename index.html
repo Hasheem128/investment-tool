@@ -27,6 +27,7 @@
     <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
     <p style="margin-top:10px;cursor:pointer;color:#38bdf8;" onclick="showForgot()">Forgot Password?</p>
+    <p id="loginError" style="color:red;text-align:center;"></p>
   </div>
   <div id="forgotBox" class="hidden">
     <h2>Reset Admin Password</h2>
@@ -80,8 +81,16 @@ document.addEventListener('DOMContentLoaded',()=>{
     panel.classList.toggle('hidden');
   }
 });
+
 const ADMIN_USER = 'hasheem';
 let ADMIN_PASS = localStorage.getItem('ADMIN_PASS') || 'something';
+
+// If you want to allow other users, extend this array:
+const USERS = [
+  {username: ADMIN_USER, password: ADMIN_PASS, isAdmin: true}
+  // {username: 'user', password: 'userpass', isAdmin: false} // Example for more users
+];
+
 let platforms = [
   {name:'Groww', mf:'BOTH', share:'DEMAT', depo:'CDSL'},
   {name:'Zerodha', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
@@ -104,25 +113,44 @@ let platforms = [
   {name:'Fyers', mf:'DEMAT', share:'DEMAT', depo:'CDSL'},
   {name:'Sharekhan', mf:'BOTH', share:'DEMAT', depo:'NSDL'}
 ];
-function login(){
-  const u = document.getElementById('username').value;
-  const p = document.getElementById('password').value;
+
+function login() {
+  let user = document.getElementById('username').value.trim();
+  let pass = document.getElementById('password').value.trim();
+  let err = document.getElementById('loginError');
+  // Validate both fields filled
+  if (user === "" || pass === "") {
+    err.innerText = "Both fields required.";
+    return;
+  }
+  // Check credentials
+  const found = USERS.find(u =>
+    u.username === user &&
+    (u.isAdmin ? (pass === ADMIN_PASS) : (u.password === pass))
+  );
+  if (!found) {
+    err.innerText = "Invalid username or password.";
+    return;
+  }
+  err.innerText = "";
   document.getElementById('loginBox').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden'); // REMOVE "hidden" FROM mainApp!!
-  if(u === ADMIN_USER && p === ADMIN_PASS){
+  document.getElementById('mainApp').classList.remove('hidden');
+  if (found.isAdmin) {
     document.getElementById('adminPanel').classList.remove('hidden');
     document.getElementById('adminCorner').classList.remove('hidden');
   }
-  renderTable([]); // Show empty table after login
+  renderTable([]);
 }
+
 function renderTable(data){
   const table = document.getElementById('resultTable');
   table.innerHTML = '';
-  if(data.length === 0) return;
+  if (data.length === 0) return;
   data.forEach(p => {
     table.innerHTML += `<tr><td>${p.name}</td><td>${p.mf}</td><td>${p.share}</td><td>${p.depo}</td></tr>`;
   });
 }
+
 function searchPlatform(){
   let q = document.getElementById('search').value.toLowerCase();
   if(q === '') {
@@ -132,16 +160,20 @@ function searchPlatform(){
   let filtered = platforms.filter(p => p.name.toLowerCase().includes(q));
   renderTable(filtered);
 }
+
 let generatedOTP = '';
 const ADMIN_MOBILE = '9999999999';
+
 function showForgot(){
   document.getElementById('loginBox').classList.add('hidden');
   document.getElementById('forgotBox').classList.remove('hidden');
 }
+
 function backToLogin(){
   document.getElementById('forgotBox').classList.add('hidden');
   document.getElementById('loginBox').classList.remove('hidden');
 }
+
 function sendOTP(){
   const mob=document.getElementById('mobile').value;
   if(mob!==ADMIN_MOBILE){alert('Mobile number not registered');return;}
@@ -151,15 +183,20 @@ function sendOTP(){
   document.getElementById('newAdminPass').classList.remove('hidden');
   document.getElementById('verifyBtn').classList.remove('hidden');
 }
+
 function verifyOTP(){
   const otp=document.getElementById('otp').value;
   const newP=document.getElementById('newAdminPass').value;
   if(otp!==generatedOTP){alert('Invalid OTP');return;}
   ADMIN_PASS=newP;
   localStorage.setItem('ADMIN_PASS',newP);
+  // Update password in USERS
+  const idx = USERS.findIndex(u=>u.username===ADMIN_USER);
+  if (idx > -1) USERS[idx].password = newP;
   alert('Password reset successful');
   backToLogin();
 }
+
 function changePassword(){
   const oldP=document.getElementById('oldPass').value;
   const newP=document.getElementById('newPass').value;
@@ -168,8 +205,12 @@ function changePassword(){
   }
   ADMIN_PASS=newP;
   localStorage.setItem('ADMIN_PASS',newP);
+  // Update password in USERS
+  const idx = USERS.findIndex(u=>u.username===ADMIN_USER);
+  if (idx > -1) USERS[idx].password = newP;
   alert('Admin password updated successfully');
 }
+
 function addPlatform(){
   let n=document.getElementById('pname').value;
   let mf=document.getElementById('mfmode').value;
