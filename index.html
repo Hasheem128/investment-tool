@@ -1,108 +1,163 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Investment Intelligence Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Platform Mode Checker</title>
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#0f172a;color:#f8fafc;margin:0;padding:0}
-    .container{max-width:1100px;margin:40px auto;padding:20px}
-    .card{background:#111827;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.5);padding:20px;margin-bottom:20px}
-    h1,h2,h3{margin-top:0}
-    input,select,button{padding:10px;border-radius:10px;border:none;margin:5px 0}
-    button{background:#2563eb;color:white;cursor:pointer}
-    button:hover{background:#1d4ed8}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{padding:10px;border-bottom:1px solid #334155;text-align:left}
-    .hidden{display:none}
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #020617;
+      padding: 15px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .container {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .card {
+      background: #111827;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 10px;
+      background: #1f2937;
+      border-radius: 8px;
+    }
+    .hidden { display: none; }
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
-
-<div class="container" id="loginScreen">
-  <div class="card" style="max-width:400px;margin:auto;">
-    <h2>🔐 Secure Login</h2>
-    <p>Enter credentials to access the system</p>
-    <input type="text" id="username" placeholder="User ID" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-    <div id="loginError" style="color:#f87171;margin-top:10px;"></div>
-  </div>
+  <header>Investment Platform Mode & Depository Checker</header>  <div class="container"><!-- LOGIN SYSTEM -->
+<div class="card" id="loginBox">
+  <h3>User Login</h3>
+  <input type="text" id="username" placeholder="Enter Username" />
+  <input type="password" id="password" placeholder="Enter Password" />
+  <button onclick="login()">Login</button>
+  <p id="loginMsg"></p>
 </div>
 
-<div class="container hidden" id="app">
-  <h1>📊 Investment Intelligence Platform</h1>
-
-  <div class="card">
-    <h2>🔍 Platform Checker</h2>
-    <input type="text" id="platformSearch" placeholder="Enter Platform Name (e.g. Groww)"/>
-    <button onclick="searchPlatform()">Check</button>
-    <div id="result"></div>
-  </div>
-
-  <div class="card">
-    <h2>📋 Platform Database</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Platform</th>
-          <th>MF Mode</th>
-          <th>Shares Depository</th>
-        </tr>
-      </thead>
-      <tbody id="platformTable"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2>⚙ Admin Panel</h2>
-    <p>Logged in as: <b id="activeUser"></b></p>
-    <button onclick="logout()">Logout</button>
-  </div>
+<!-- MAIN SYSTEM -->
+<div class="card hidden" id="mainSystem">
+  <h3>Search Investment Platform</h3>
+  <input type="text" id="platformInput" placeholder="Enter platform name (eg: Groww, Zerodha)" />
+  <button onclick="checkPlatform()">Check Details</button>
+  <div class="result" id="resultBox"></div>
 </div>
 
-<script>
-const users = [{ username: 'hasheem', password: 'something', role: 'admin' }];
+<!-- ADMIN PANEL -->
+<div class="card hidden" id="adminPanel">
+  <h3>Admin Control Panel</h3>
+  <p>You have full power to modify platform data in code.</p>
+</div>
 
-const platforms = [
-  { name: 'Groww', mf: 'SOA + Demat', depository: 'CDSL' },
-  { name: 'Zerodha Coin', mf: 'Demat', depository: 'CDSL' },
-  { name: 'Paytm Money', mf: 'SOA + Demat', depository: 'NSDL' },
-  { name: 'Upstox', mf: 'Demat', depository: 'CDSL' },
-  { name: 'Kuvera', mf: 'SOA', depository: 'Not Required' },
-  { name: 'ET Money', mf: 'SOA', depository: 'Not Required' },
-  { name: 'Angel One', mf: 'SOA + Demat', depository: 'CDSL' }
+  </div>  <footer>
+    Super Functionality Version • Admin Enabled • Free Hosting Ready
+  </footer><script>
+// ================= USER DATABASE ==================
+const users = [
+  { username: "hasheem", password: "something", role: "admin" }
 ];
 
-const table = document.getElementById('platformTable');
-platforms.forEach(p => {
-  table.innerHTML += `<tr><td>${p.name}</td><td>${p.mf}</td><td>${p.depository}</td></tr>`;
-});
+// ================= PLATFORM DATABASE ==================
+const platforms = {
+  "groww": {
+    mode: "SOA",
+    depository: "CDSL",
+    shares: "CDSL",
+    description: "Groww uses SOA structure for mutual funds and CDSL for share holdings."
+  },
+  "zerodha": {
+    mode: "DEMAT",
+    depository: "CDSL",
+    shares: "CDSL",
+    description: "Zerodha works fully on Demat mode and stores shares in CDSL."
+  },
+  "upstox": {
+    mode: "DEMAT",
+    depository: "CDSL",
+    shares: "CDSL",
+    description: "Upstox uses Demat structure via CDSL depository."
+  },
+  "paytm money": {
+    mode: "SOA + DEMAT",
+    depository: "NSDL & CDSL",
+    shares: "BOTH",
+    description: "Paytm Money supports both modes based on investment type."
+  }
+};
 
-function login(){
+// ================= LOGIN FUNCTION ==================
+function login() {
   const u = document.getElementById('username').value;
   const p = document.getElementById('password').value;
-  const user = users.find(x => x.username === u && x.password === p);
-  if(user){
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('app').classList.remove('hidden');
-    document.getElementById('activeUser').innerText = user.username;
-  }else{
-    document.getElementById('loginError').innerText = 'Invalid credentials';
+  const msg = document.getElementById('loginMsg');
+
+  const user = users.find(user => user.username === u && user.password === p);
+
+  if(user) {
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('mainSystem').classList.remove('hidden');
+
+    if(user.role === "admin") {
+      document.getElementById('adminPanel').classList.remove('hidden');
+    }
+  } else {
+    msg.innerText = "Invalid credentials";
   }
 }
 
-function logout(){ location.reload(); }
+// ================= PLATFORM SEARCH ==================
+function checkPlatform() {
+  const input = document.getElementById('platformInput').value.toLowerCase();
+  const result = document.getElementById('resultBox');
 
-function searchPlatform(){
-  const val = document.getElementById('platformSearch').value.toLowerCase();
-  const res = platforms.find(p => p.name.toLowerCase().includes(val));
-  const output = document.getElementById('result');
-  output.innerHTML = res 
-    ? `✅ <b>${res.name}</b><br>MF Mode: ${res.mf}<br>Depository: ${res.depository}` 
-    : '❌ Platform not found';
+  if(platforms[input]) {
+    const p = platforms[input];
+    result.innerHTML = `
+      <strong>Platform:</strong> ${input.toUpperCase()}<br>
+      <strong>Investment Mode:</strong> ${p.mode}<br>
+      <strong>Depository Used:</strong> ${p.depository}<br>
+      <strong>Shares Stored In:</strong> ${p.shares}<br>
+      <strong>Description:</strong> ${p.description}
+    `;
+  } else {
+    result.innerHTML = "Platform not found in database.";
+  }
 }
-</script>
-
-</body>
+</script></body>
 </html>
