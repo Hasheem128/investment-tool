@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,18 +14,21 @@
     th, td { padding:10px; border-bottom:1px solid #334155; text-align:left; }
     .hidden { display:none; }
     .admin { background:#020617; padding:15px; border-radius:10px; margin-top:20px; }
-.admin-corner{position:fixed;top:15px;right:15px;background:#38bdf8;color:#000;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;z-index:999;}
+    .admin-corner{position:fixed;top:15px;right:15px;background:#38bdf8;color:#000;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;z-index:999;}
   </style>
 </head>
 <body>
-<div class="admin-corner hidden" id="adminCorner">👑 Admin Panel</div><div class="container">
-  <h1>Indian Investment Platform Checker</h1>  <div id="loginBox">
+<div class="admin-corner hidden" id="adminCorner">👑 Admin Panel</div>
+<div class="container">
+  <h1>Indian Investment Platform Checker</h1>
+  <div id="loginBox">
     <h2>Login</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
     <p style="margin-top:10px;cursor:pointer;color:#38bdf8;" onclick="showForgot()">Forgot Password?</p>
-  </div>  <div id="forgotBox" class="hidden">
+  </div>
+  <div id="forgotBox" class="hidden">
     <h2>Reset Admin Password</h2>
     <input type="text" id="mobile" placeholder="Enter Registered Mobile Number">
     <button onclick="sendOTP()">Send OTP</button>
@@ -33,43 +37,44 @@
     <button onclick="verifyOTP()" id="verifyBtn" class="hidden">Verify & Reset</button>
     <button onclick="backToLogin()">Back to Login</button>
   </div>
-  </div>  <div id="mainApp" class="hidden">
+  <div id="mainApp" class="hidden">
     <h2>Search Platform</h2>
-    <input type="text" id="search" placeholder="Enter platform name..." onkeyup="searchPlatform()"><table>
-  <thead>
-    <tr>
-      <th>Platform</th>
-      <th>MF Mode</th>
-      <th>Shares Mode</th>
-      <th>Depository</th>
-    </tr>
-  </thead>
-  <tbody id="resultTable"></tbody>
-</table>
+    <input type="text" id="search" placeholder="Enter platform name..." onkeyup="searchPlatform()">
+    <table>
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>MF Mode</th>
+          <th>Shares Mode</th>
+          <th>Depository</th>
+        </tr>
+      </thead>
+      <tbody id="resultTable"></tbody>
+    </table>
 
-<div id="adminPanel" class="admin hidden">
-  <h2>Admin Panel - Add New Platform</h2>
-  <input id="pname" placeholder="Platform Name">
-  <select id="mfmode">
-    <option>SOA</option>
-    <option>DEMAT</option>
-    <option>BOTH</option>
-  </select>
-  <select id="dpmode">
-    <option>CDSL</option>
-    <option>NSDL</option>
-    <option>BOTH</option>
-  </select>
-  <button onclick="addPlatform()">Add Platform</button>
+    <div id="adminPanel" class="admin hidden">
+      <h2>Admin Panel - Add New Platform</h2>
+      <input id="pname" placeholder="Platform Name">
+      <select id="mfmode">
+        <option>SOA</option>
+        <option>DEMAT</option>
+        <option>BOTH</option>
+      </select>
+      <select id="dpmode">
+        <option>CDSL</option>
+        <option>NSDL</option>
+        <option>BOTH</option>
+      </select>
+      <button onclick="addPlatform()">Add Platform</button>
 
-  <h3 style="margin-top:20px;">Change Admin Password</h3>
-  <input type="password" id="oldPass" placeholder="Current Password">
-  <input type="password" id="newPass" placeholder="New Password">
-  <button onclick="changePassword()">Update Password</button>
-</div>
-
+      <h3 style="margin-top:20px;">Change Admin Password</h3>
+      <input type="password" id="oldPass" placeholder="Current Password">
+      <input type="password" id="newPass" placeholder="New Password">
+      <button onclick="changePassword()">Update Password</button>
+    </div>
   </div>
-</div><script>
+</div>
+<script>
 document.addEventListener('DOMContentLoaded',()=>{
   const corner=document.getElementById('adminCorner');
   corner.onclick=()=>{
@@ -104,81 +109,6 @@ let platforms = [
 ];
 
 function login(){
-  const u=document.getElementById('username').value;
-  const p=document.getElementById('password').value;
-  document.getElementById('loginBox').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden');
-  if(u===ADMIN_USER && p===ADMIN_PASS){
-    document.getElementById('adminPanel').classList.remove('hidden');
-    document.getElementById('adminCorner').classList.remove('hidden');
-  }
-  renderTable(platforms);
-}
-
-function renderTable(data){
-  const table=document.getElementById('resultTable');
-  table.innerHTML='';
-  data.forEach(p=>{
-    table.innerHTML+=`<tr><td>${p.name}</td><td>${p.mf}</td><td>${p.share}</td><td>${p.depo}</td></tr>`;
-  });
-}
-
-function searchPlatform(){
-  let q=document.getElementById('search').value.toLowerCase();
-  let filtered=platforms.filter(p=>p.name.toLowerCase().includes(q));
-  renderTable(filtered);
-}
-
-let generatedOTP = '';
-const ADMIN_MOBILE = '9999999999'; // change to your real number
-
-function showForgot(){
-  document.getElementById('loginBox').classList.add('hidden');
-  document.getElementById('forgotBox').classList.remove('hidden');
-}
-
-function backToLogin(){
-  document.getElementById('forgotBox').classList.add('hidden');
-  document.getElementById('loginBox').classList.remove('hidden');
-}
-
-function sendOTP(){
-  const mob=document.getElementById('mobile').value;
-  if(mob!==ADMIN_MOBILE){alert('Mobile number not registered');return;}
-  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-  alert('OTP (Demo): '+generatedOTP);
-  document.getElementById('otp').classList.remove('hidden');
-  document.getElementById('newAdminPass').classList.remove('hidden');
-  document.getElementById('verifyBtn').classList.remove('hidden');
-}
-
-function verifyOTP(){
-  const otp=document.getElementById('otp').value;
-  const newP=document.getElementById('newAdminPass').value;
-  if(otp!==generatedOTP){alert('Invalid OTP');return;}
-  ADMIN_PASS=newP;
-  localStorage.setItem('ADMIN_PASS',newP);
-  alert('Password reset successful');
-  backToLogin();
-}
-
-function changePassword(){
-  const oldP=document.getElementById('oldPass').value;
-  const newP=document.getElementById('newPass').value;
-  if(oldP!==ADMIN_PASS){
-    alert('Current password incorrect');return;
-  }
-  ADMIN_PASS=newP;
-  localStorage.setItem('ADMIN_PASS',newP);
-  alert('Admin password updated successfully');
-}
-
-function addPlatform(){
-  let n=document.getElementById('pname').value;
-  let mf=document.getElementById('mfmode').value;
-  let dp=document.getElementById('dpmode').value;
-  platforms.push({name:n,mf:mf,share:'DEMAT',depo:dp});
-  renderTable(platforms);
-}
-</script></body>
-</html>
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  document
