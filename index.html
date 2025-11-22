@@ -15,6 +15,9 @@
     .hidden { display:none; }
     .admin { background:#020617; padding:15px; border-radius:10px; margin-top:20px; }
     .admin-corner{position:fixed;top:15px;right:15px;background:#38bdf8;color:#000;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;z-index:999;}
+    .official-links {margin-top:30px; font-size: 0.9rem;}
+    .official-links a {color:#38bdf8; text-decoration:none;}
+    .official-links a:hover {text-decoration:underline;}
   </style>
 </head>
 <body>
@@ -52,6 +55,19 @@
       </thead>
       <tbody id="resultTable"></tbody>
     </table>
+
+    <div class="official-links">
+      <p>For comprehensive and up-to-date list of all SEBI registered stock brokers and depository participants, please visit the official sites:</p>
+      <ul>
+        <li><a href="https://www.sebi.gov.in/sebiweb/other/OtherAction.do?doRecognisedFpi=yes&intmId=30" target="_blank" rel="noopener noreferrer">SEBI Registered Stock Brokers</a><br>
+          (Official SEBI page listing 4900+ registered stock brokers in the equity segment, updated regularly. Includes broker names, registration numbers, validity, and contact details.)</li>
+        <li><a href="https://nsdl.co.in/direct_search.php" target="_blank" rel="noopener noreferrer">NSDL Depository Participants</a><br>
+          (Searchable directory of NSDL registered Depository Participants facilitating dematerialized holdings of shares and mutual funds.)</li>
+        <li><a href="https://www.cdslindia.com/" target="_blank" rel="noopener noreferrer">CDSL Depository Participants</a><br>
+          (Official CDSL site listing Depository Participants across India responsible for demat account operations.)</li>
+      </ul>
+    </div>
+
     <div id="adminPanel" class="admin hidden">
       <h2>Admin Panel - Add New Platform</h2>
       <input id="pname" placeholder="Platform Name">
@@ -85,10 +101,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 const ADMIN_USER = 'hasheem';
 let ADMIN_PASS = localStorage.getItem('ADMIN_PASS') || 'something';
 
-// If you want to allow other users, extend this array:
 const USERS = [
   {username: ADMIN_USER, password: ADMIN_PASS, isAdmin: true}
-  // {username: 'user', password: 'userpass', isAdmin: false} // Example for more users
 ];
 
 let platforms = [
@@ -118,12 +132,10 @@ function login() {
   let user = document.getElementById('username').value.trim();
   let pass = document.getElementById('password').value.trim();
   let err = document.getElementById('loginError');
-  // Validate both fields filled
   if (user === "" || pass === "") {
     err.innerText = "Both fields required.";
     return;
   }
-  // Check credentials
   const found = USERS.find(u =>
     u.username === user &&
     (u.isAdmin ? (pass === ADMIN_PASS) : (u.password === pass))
@@ -190,7 +202,6 @@ function verifyOTP(){
   if(otp!==generatedOTP){alert('Invalid OTP');return;}
   ADMIN_PASS=newP;
   localStorage.setItem('ADMIN_PASS',newP);
-  // Update password in USERS
   const idx = USERS.findIndex(u=>u.username===ADMIN_USER);
   if (idx > -1) USERS[idx].password = newP;
   alert('Password reset successful');
@@ -205,7 +216,6 @@ function changePassword(){
   }
   ADMIN_PASS=newP;
   localStorage.setItem('ADMIN_PASS',newP);
-  // Update password in USERS
   const idx = USERS.findIndex(u=>u.username===ADMIN_USER);
   if (idx > -1) USERS[idx].password = newP;
   alert('Admin password updated successfully');
